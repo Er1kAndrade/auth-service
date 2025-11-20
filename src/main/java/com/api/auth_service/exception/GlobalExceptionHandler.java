@@ -38,10 +38,16 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
+    
+    @ExceptionHandler(UnathorizedAccessExeption.class)
+    public ResponseEntity<ErrorResponse> UnathorizedAccessExeption(UnathorizedAccessExeption ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.FORBIDDEN.value());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
 
-    // @ExceptionHandler(Exception.class) // fallback geral
-    // public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
-    //     ErrorResponse error = new ErrorResponse("Erro interno no servidor", HttpStatus.INTERNAL_SERVER_ERROR.value());
-    //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    // }
+    @ExceptionHandler(Exception.class) // fallback geral
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        ErrorResponse error = new ErrorResponse("Erro interno no servidor", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
 }

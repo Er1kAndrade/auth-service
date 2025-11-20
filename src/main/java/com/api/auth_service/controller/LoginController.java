@@ -59,7 +59,7 @@ public class LoginController {
 
         ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken.getToken())
             .httpOnly(true)
-            .secure(false) // true em produção
+            .secure(false) 
             .path("/auth/refresh")
             .sameSite("Strict")
             .maxAge(7 * 24 * 60 * 60)

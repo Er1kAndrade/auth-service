@@ -23,8 +23,12 @@ public class UserModel {
     @Column(nullable = false, unique = true)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "st_role")
     private String Role;
+
+    public Long getId() {
+        return id;
+    }    
 
     public String getUsername() {
         return username;
@@ -48,10 +52,10 @@ public class UserModel {
     } 
     
     public String getRole() {
-        return password;
+        return Role;
     }
     public void setRole(String password) {
-        this.password = password;
+        this.password = Role;
     }
 
 

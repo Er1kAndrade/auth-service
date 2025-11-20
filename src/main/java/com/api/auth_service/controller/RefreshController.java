@@ -1,8 +1,5 @@
 package com.api.auth_service.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,8 +19,6 @@ import com.api.auth_service.model.UserModel;
 import com.api.auth_service.repositories.RefreshTokenRepository;
 import com.api.auth_service.security.JwtUtil;
 import com.api.auth_service.service.RefreshTokenService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 @RestController
 @RequestMapping("/auth") 
@@ -40,13 +35,11 @@ public class RefreshController {
     private RefreshTokenService refreshTokenService;
 
     @PostMapping("/refresh")
-    public ResponseEntity<String> refresh(@CookieValue(value = "refresh_token", required = false) String refreshToken) {
+    public ResponseEntity<RefreshResponseDTO> refresh(@CookieValue(value = "refresh_token", required = false) String refreshToken) {
 
         if (refreshToken == null) {
             throw new RefreshTokenCookieEmptyException("Refresh token cookie not found");
         }
-
-        try{    
             RefreshToken token = refreshTokenRepository
             .findByToken(refreshToken)
             .orElseThrow(() -> new TokenNotFoundException("Token not found"));
@@ -64,16 +57,13 @@ public class RefreshController {
 
             ResponseCookie cookie = ResponseCookie.from("refresh_token", RefreshToken.getToken())
                 .httpOnly(true)
-                .secure(true) // true em produção
+                .secure(false) 
                 .path("/auth/refresh")
                 .sameSite("Strict")
                 .maxAge(7 * 24 * 60 * 60)
                 .build();
 
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Token resetado com sucesso!");
-            response.put("access_token", accessToken);
-
+        
             RefreshResponseDTO dto = new RefreshResponseDTO(
                 "Token resetado com sucesso!",
                 accessToken 
@@ -83,19 +73,6 @@ public class RefreshController {
 
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new ObjectMapper().writeValueAsString(dto));
-
-        }  catch (RuntimeException e) {
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-
-        } catch(Exception e){
-            e.printStackTrace();
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao logar usuário: " + e.getMessage());
-        }
-
+                .body(dto);
     }
 }

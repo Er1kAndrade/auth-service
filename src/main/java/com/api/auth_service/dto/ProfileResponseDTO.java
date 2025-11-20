@@ -7,7 +7,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserResonseDTO {
+public class ProfileResponseDTO {
     private Long Id;
     private String Username;
     private String Role;

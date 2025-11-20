@@ -1,6 +1,8 @@
 package com.api.auth_service.security;
 
 import java.io.IOException;
+import java.util.Set;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +12,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebFilter(filterName = "JWTFilter", urlPatterns = "/api/*")
+@WebFilter(filterName = "JWTFilter", urlPatterns = "/*")
 public class JwtFilter implements Filter {
     
     private final JwtUtil jwtUtil;
@@ -19,6 +21,11 @@ public class JwtFilter implements Filter {
         this.jwtUtil = jwtUtil;
     }
 
+    private static final Set<String> PUBLIC_ROUTES = Set.of(
+            "/auth/login",
+            "/auth/register",
+            "/auth/refresh"
+    );
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -28,7 +35,7 @@ public class JwtFilter implements Filter {
 
         String path = httpRequest.getRequestURI();    
 
-        if (path.equals("/auth/login") || path.equals("/auth/register") || path.equals("/auth/refresh")) {
+        if (PUBLIC_ROUTES.contains(path)) {
             chain.doFilter(request, response);
             return;
         }
