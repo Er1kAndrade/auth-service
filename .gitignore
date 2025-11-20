@@ -43,6 +43,8 @@ buildNumber.properties
 # Wrapper files
 .mvn/wrapper/maven-wrapper.jar
 
+.mvn/
+
 # ============================================
 # IDEs
 # ============================================
