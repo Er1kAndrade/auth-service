@@ -68,7 +68,3 @@ Validação de DTOs
 Tratamento de erros via @RestControllerAdvice
 
 Mensagens de erro padronizadas
-
-📘 Documentação
-
-Swagger/OpenAPI disponível em:
