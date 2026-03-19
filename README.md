@@ -63,7 +63,7 @@ Auth Service é uma API REST completa desenvolvida para gerenciar autenticação
 
 #### 1. Clone o repositório
 ```bash
-git clone <seu-repositorio>
+git clone https://github.com/Er1kAndrade/auth-service
 cd auth-service
 ```
 
