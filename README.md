@@ -95,6 +95,7 @@ A aplicação estará disponível em: `http://localhost:8080`
 
 ---
 
+
 ## 📚 Documentação da API
 
 ### Swagger/OpenAPI
@@ -424,3 +425,6 @@ Para dúvidas e sugestões, abra uma issue no repositório ou entre em contato.
 ---
 
 **Última atualização:** Março 2026
+=======
+Mensagens de erro padronizadas
+>>>>>>> bc7ace94953a8a125c5270c7d089a0a8f684d0bd
