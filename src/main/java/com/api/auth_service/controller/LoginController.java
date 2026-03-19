@@ -53,13 +53,13 @@ public class LoginController {
 
         refreshTokenService.deleteByUser(User);
         
-        String accessToken = jwtUtil.generateAccessToken(requested_User.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(User);
 
         RefreshToken refreshToken = refreshTokenService.create(User);
 
         ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken.getToken())
             .httpOnly(true)
-            .secure(false) 
+            .secure(true) 
             .path("/auth/refresh")
             .sameSite("Strict")
             .maxAge(7 * 24 * 60 * 60)

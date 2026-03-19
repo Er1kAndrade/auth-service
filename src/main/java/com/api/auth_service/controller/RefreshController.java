@@ -51,13 +51,13 @@ public class RefreshController {
 
             UserModel user = token.getUser();
 
-            String accessToken = jwtUtil.generateAccessToken(user.getEmail());
+            String accessToken = jwtUtil.generateAccessToken(user);
 
             RefreshToken RefreshToken = refreshTokenService.create(user);
 
             ResponseCookie cookie = ResponseCookie.from("refresh_token", RefreshToken.getToken())
                 .httpOnly(true)
-                .secure(false) 
+                .secure(true) 
                 .path("/auth/refresh")
                 .sameSite("Strict")
                 .maxAge(7 * 24 * 60 * 60)

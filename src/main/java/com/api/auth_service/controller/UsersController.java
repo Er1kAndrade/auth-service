@@ -16,10 +16,17 @@ import com.api.auth_service.model.UserModel;
 import com.api.auth_service.repositories.UserRepository;
 import com.api.auth_service.security.JwtUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+// import io.swagger.v3.oas.annotations.parameters.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 
 
-
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Users", description = "Endpoints de usuários e perfis")
 @RestController
 @RequestMapping("/auth") 
 public class UsersController {
@@ -30,14 +37,29 @@ public class UsersController {
     @Autowired
     private UserRepository userRepository;
 
+    @Operation(
+        summary = "Retorna o perfil de um usuário específico",
+        description = "Requer autenticação via JWT e privilégios administrativos.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Perfil retornado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Token inválido ou ausente"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado (não é admin)"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+        }
+    )
+
     @GetMapping("/users/{id}/profile")
-    public ResponseEntity<ProfileResponseDTO> Profile(@PathVariable("id") String userid, HttpServletRequest request){
+    public ResponseEntity<ProfileResponseDTO> Profile(
+          @Parameter(description = "ID do usuário que deseja buscar", example = "12")
+          @PathVariable("id") String userid, HttpServletRequest request){
        
 
         String token = (String) request.getAttribute("jwt");
 
         String email = jwtUtil.getEmailFromToken(token);
 
+        System.out.println(email);
+            
         UserModel user = userRepository
             .findByEmail(email)
             .orElseThrow(() -> new TokenNotFoundException("Invalid User"));

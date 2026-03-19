@@ -1,7 +1,6 @@
 package com.api.auth_service.security;
 
 import java.io.IOException;
-import java.util.Set;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -21,39 +20,45 @@ public class JwtFilter implements Filter {
         this.jwtUtil = jwtUtil;
     }
 
-    private static final Set<String> PUBLIC_ROUTES = Set.of(
-            "/auth/login",
-            "/auth/register",
-            "/auth/refresh"
-    );
+    private boolean isPublicRoute(String path) {
+    return path.equals("/auth/login")
+        || path.equals("/auth/register")
+        || path.equals("/auth/refresh")
+        || path.startsWith("/v3/api-docs")
+        || path.startsWith("/swagger-ui")
+        || path.equals("/swagger-ui.html");
+    }
 
-    @Override
+
+   @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        String path = httpRequest.getRequestURI();
         String token = httpRequest.getHeader("Authorization");
 
-        String path = httpRequest.getRequestURI();    
-
-        if (PUBLIC_ROUTES.contains(path)) {
+        // libera rotas públicas (com prefixo)
+        if (isPublicRoute(path)) {
             chain.doFilter(request, response);
             return;
         }
 
         if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);  
-            if (jwtUtil.isValid(token)) {
-                // Continue with the request
-                httpRequest.setAttribute("jwt", token);
+            token = token.substring(7);
 
+            if (jwtUtil.isValid(token)) {
+                httpRequest.setAttribute("jwt", token);
                 chain.doFilter(request, response);
-            } else {
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
                 return;
             }
-        } else {
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header is missing");
+
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
             return;
         }
+
+        httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header is missing");
     }
 }
